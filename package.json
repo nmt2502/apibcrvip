@@ -1,9 +1,9 @@
 {
   "name": "bcr_api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bcr.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node bcr.js"
   },
   "dependencies": {
     "express": "^4.18.2",
