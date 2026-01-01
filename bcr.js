@@ -63,11 +63,30 @@ async function fetchAll() {
 }
 
 // ================== LẤY 1 BÀN ==================
+function normalizeBanId(str = '') {
+    return str
+        .toUpperCase()
+        .replace(/O/g, '0')   // CO2 -> C02
+        .replace(/\s+/g, '')
+        .trim();
+}
+
 async function getBan(banId) {
     const all = await fetchAll();
-    const raw = all.find(i => i.cấm === banId);
 
-    if (!raw) return { ban: banId, trang_thai: 'Không có dữ liệu' };
+    const banNorm = normalizeBanId(banId);
+
+    const raw = all.find(item => {
+        const apiBan = normalizeBanId(item.cấm);
+        return apiBan === banNorm;
+    });
+
+    if (!raw) {
+        return {
+            ban: banId,
+            trang_thai: 'Không có dữ liệu'
+        };
+    }
 
     const ket_qua = raw.ket_qua || '';
     const cauApi = raw.cau || raw.cầu || null;
@@ -75,16 +94,12 @@ async function getBan(banId) {
     const du10g1 = duDoan10g1(ket_qua);
     const cau = phatHienCau(ket_qua);
 
-    let du_doan = null;
-    if (cau.du_doan) du_doan = cau.du_doan;
-    else du_doan = du10g1;
-
     return {
         ban: banId,
         ket_qua,
         cau_api: cauApi,
         loai_cau: cau.loaiCau,
-        du_doan,
+        du_doan: cau.du_doan || du10g1,
         cap_nhat: raw['Thời gian']
     };
 }
