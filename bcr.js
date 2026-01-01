@@ -47,7 +47,7 @@ function phatHienCau(ket_qua) {
 // --- 3. Lấy dữ liệu từ API gốc ---
 async function fetchBanData(banId) {
     try {
-        const response = await axios.get(`https://predictbcr.onrender.com/api/${banId.toLowerCase()}`);
+        const response = await axios.get(`https://bcrapj-9ska.onrender.com/sexy/all${banId.toLowerCase()}`);
         const data = response.data;
 
         const du_doan_10g1 = duDoan10g1(data.ket_qua);
