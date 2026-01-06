@@ -3,10 +3,18 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Bàn C01 → C16
-const banList = Array.from({ length: 16 }, (_, i) =>
+// ================== DANH SÁCH BÀN ==================
+// BAN01 → BAN10
+const banThuong = Array.from({ length: 10 }, (_, i) =>
+  `BAN${(i + 1).toString().padStart(2, '0')}`
+);
+
+// C01 → C16
+const banC = Array.from({ length: 16 }, (_, i) =>
   `C${(i + 1).toString().padStart(2, '0')}`
 );
+
+const banList = [...banThuong, ...banC];
 
 // ================== 10g1 ==================
 function duDoan10g1(ket_qua) {
@@ -50,7 +58,7 @@ function phatHienCau(ket_qua) {
     return { loaiCau: 'Không rõ', du_doan: null };
 }
 
-// ================== FETCH 1 LẦN ==================
+// ================== FETCH + CACHE ==================
 let cache = null;
 let lastFetch = 0;
 
@@ -62,22 +70,24 @@ async function fetchAll() {
     return cache;
 }
 
-// ================== LẤY 1 BÀN ==================
+// ================== CHUẨN HOÁ TÊN BÀN ==================
 function normalizeBanId(str = '') {
     return str
         .toUpperCase()
-        .replace(/O/g, '0')   // CO2 -> C02
-        .replace(/\s+/g, '')
+        .replace(/O/g, '0')                // CO2 → C02
+        .replace(/\s+/g, '')              // BAN 01 → BAN01
+        .replace(/^BAN(\d)$/, 'BAN0$1')   // BAN1 → BAN01
+        .replace(/^C(\d)$/, 'C0$1')       // C1 → C01
         .trim();
 }
 
+// ================== LẤY 1 BÀN ==================
 async function getBan(banId) {
     const all = await fetchAll();
-
     const banNorm = normalizeBanId(banId);
 
     const raw = all.find(item => {
-        const apiBan = normalizeBanId(item.cấm);
+        const apiBan = normalizeBanId(item.cấm || item.ban || '');
         return apiBan === banNorm;
     });
 
@@ -120,7 +130,19 @@ app.get('/api/ban', async (req, res) => {
     res.json(result);
 });
 
-// ================== START ==================
+// ================== API FULL BÀN ==================
+app.get('/api/fullban', async (req, res) => {
+    const result = {};
+    for (const ban of banList) {
+        result[ban] = await getBan(ban);
+    }
+    res.json({
+        tong_ban: banList.length,
+        danh_sach: result
+    });
+});
+
+// ================== START SERVER ==================
 app.listen(port, () => {
     console.log(`🚀 BCR API chạy tại port ${port}`);
 });
