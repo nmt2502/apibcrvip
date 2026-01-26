@@ -79,7 +79,7 @@ let lastFetch = 0;
 
 async function fetchAll() {
     if (cache && Date.now() - lastFetch < 3000) return cache;
-    const res = await axios.get('https://bcrapj-9ska.onrender.com/sexy/all');
+    const res = await axios.get('https://bcrapj.vercel.app/sexy/all');
     cache = res.data;
     lastFetch = Date.now();
     return cache;
