@@ -79,7 +79,7 @@ let lastFetch = 0;
 
 async function fetchAll() {
     if (cache && Date.now() - lastFetch < 3000) return cache;
-    const res = await axios.get('https://bcrapj.vercel.app/sexy/all');
+    const res = await axios.get('https://lotus-resolved-shopzilla-acdbentity.trycloudflare.com/api/bcr');
     cache = res.data;
     lastFetch = Date.now();
     return cache;
